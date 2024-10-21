@@ -99,8 +99,16 @@ namespace ES3Editor
 
                     using (new EditorGUILayout.HorizontalScope(GUILayout.Width(200)))
                     {
-                        searchTerm = GUILayout.TextField(searchTerm, GUI.skin.FindStyle("ToolbarSeachTextField"));
-                        if (GUILayout.Button("", GUI.skin.FindStyle("ToolbarSeachCancelButton")))
+                        var searchTextFieldSkin = GUI.skin.FindStyle("ToolbarSearchTextField");
+                        if (searchTextFieldSkin == null)
+                            searchTextFieldSkin = GUI.skin.FindStyle("ToolbarSeachTextField");
+
+                        var searchButtonSkin = GUI.skin.FindStyle("ToolbarSearchCancelButton");
+                        if (searchButtonSkin == null)
+                            searchButtonSkin = GUI.skin.FindStyle("ToolbarSeachCancelButton");
+
+                        searchTerm = GUILayout.TextField(searchTerm, searchTextFieldSkin);
+                        if (GUILayout.Button("", searchButtonSkin))
                         {
                             // Remove focus if cleared
                             searchTerm = "";
@@ -139,7 +147,8 @@ namespace ES3Editor
                 parentObjects = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects();
             else // Prefabs
             {
-                var prefabs = ES3ReferenceMgr.Current.prefabs;
+                var mgr = ES3ReferenceMgr.GetManagerFromScene(SceneManager.GetActiveScene(), false);
+                var prefabs = mgr.prefabs;
                 parentObjects = new GameObject[prefabs.Count];
                 for (int i = 0; i < prefabs.Count; i++)
                     if(prefabs[i] != null)

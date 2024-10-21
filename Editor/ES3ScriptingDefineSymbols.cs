@@ -24,18 +24,45 @@ public class ES3ScriptingDefineSymbols
             SetDefineSymbol("BOLT_VISUAL_SCRIPTING");
     }
 
-    static void SetDefineSymbol(string symbol)
+    internal static bool HasDefineSymbol(string symbol)
     {
 #if UNITY_2021_2_OR_NEWER
         foreach (var target in GetAllNamedBuildTargets())
         {
             string[] defines;
-            PlayerSettings.GetScriptingDefineSymbols(target, out defines);
-            if(!defines.Contains(symbol))
+            try
             {
-                ArrayUtility.Add(ref defines, symbol);
-                PlayerSettings.SetScriptingDefineSymbols(target, defines);
+                PlayerSettings.GetScriptingDefineSymbols(target, out defines);
+                if (defines.Contains(symbol))
+                    return true;
             }
+            catch { }
+        }
+#else
+        string definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+        var allDefines = new HashSet<string>(definesString.Split(';'));
+        if (allDefines.Contains(symbol))
+            return true;
+#endif
+        return false;
+    }
+
+    internal static void SetDefineSymbol(string symbol)
+    {
+#if UNITY_2021_2_OR_NEWER
+        foreach (var target in GetAllNamedBuildTargets())
+        {
+            string[] defines;
+            try
+            {
+                PlayerSettings.GetScriptingDefineSymbols(target, out defines);
+                if (!defines.Contains(symbol))
+                {
+                    ArrayUtility.Add(ref defines, symbol);
+                    PlayerSettings.SetScriptingDefineSymbols(target, defines);
+                }
+            }
+            catch { }
         }
 #else
         string definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
@@ -44,6 +71,29 @@ public class ES3ScriptingDefineSymbols
             PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, string.Join(";", allDefines.Concat(new string[] { symbol }).ToArray()));
 #endif
             return;
+    }
+
+    internal static void RemoveDefineSymbol(string symbol)
+    {
+#if UNITY_2021_2_OR_NEWER
+        foreach (var target in GetAllNamedBuildTargets())
+        {
+            string[] defines;
+            try
+            {
+                PlayerSettings.GetScriptingDefineSymbols(target, out defines);
+                ArrayUtility.Remove(ref defines, symbol);
+                PlayerSettings.SetScriptingDefineSymbols(target, defines);
+            }
+            catch { }
+        }
+#else
+        string definesString = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+        definesString.Replace(symbol + ";", ""); // With semicolon
+        definesString.Replace(symbol, ""); // Without semicolon
+        PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, definesString);
+#endif
+        return;
     }
 
 #if UNITY_2021_2_OR_NEWER
@@ -56,6 +106,10 @@ public class ES3ScriptingDefineSymbols
         {
             // We exclude 'Unknown' because this can throw errors when used with certain methods.
             if (staticField.Name == "Unknown")
+                continue;
+
+            // A bug at Unity's end means that Stadia can throw an error.
+            if (staticField.Name == "Stadia")
                 continue;
 
             if (staticField.FieldType == typeof(NamedBuildTarget))

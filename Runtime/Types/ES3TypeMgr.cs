@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ES3Types;
+using System.Linq;
 
 namespace ES3Internal
 {
@@ -82,7 +83,7 @@ namespace ES3Internal
 				Type genericType = ES3Reflection.GetGenericTypeDefinition(type);
                 if (typeof(List<>).IsAssignableFrom(genericType))
                     es3Type = new ES3ListType(type);
-                else if (typeof(IDictionary).IsAssignableFrom(genericType))
+                else if (typeof(Dictionary<,>).IsAssignableFrom(genericType))
                     es3Type = new ES3DictionaryType(type);
                 else if (genericType == typeof(Queue<>))
                     es3Type = new ES3QueueType(type);
@@ -92,6 +93,11 @@ namespace ES3Internal
                     es3Type = new ES3HashSetType(type);
                 else if (genericType == typeof(Unity.Collections.NativeArray<>))
                     es3Type = new ES3NativeArrayType(type);
+                // Else see if there is an ES3Type with the generic type definition.
+                else if((es3Type = GetES3Type(genericType)) != null)
+                {
+
+                }
                 else if (throwException)
                     throw new NotSupportedException("Generic type \"" + type.ToString() + "\" is not supported by Easy Save.");
                 else
@@ -140,8 +146,11 @@ namespace ES3Internal
             lock (_lock)
             {
                 types = new Dictionary<Type, ES3Type>();
-                // ES3Types add themselves to the types Dictionary.
-                ES3Reflection.GetInstances<ES3Type>();
+                
+                var instances = ES3Reflection.GetInstances<ES3Type>(); // ES3Types add themselves to the manager when instantiated to ensure they don't cause cyclic references if they contain a field which is the same type as themselves.
+
+                /*foreach(var instance in instances)
+                    ES3TypeMgr.Add(instance.type, instance);*/
 
                 // Check that the type list was initialised correctly.
                 if (types == null || types.Count == 0)
