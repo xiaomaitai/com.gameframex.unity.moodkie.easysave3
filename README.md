@@ -2,15 +2,15 @@
 
 Easy Save可以让你轻松地跨平台保存几乎任何东西，同时还具有加密、压缩、云存储、电子表格、备份等功能。
 
-该库主要服务于 `https://github.com/AlianBlank/GameFrameX` 作为子库使用。
+该库主要服务于 `https://github.com/GameFrameX/GameFrameX` 作为子库使用。
 
 
 # 使用方式(三种方式)
 1. 直接在 `manifest.json` 文件中添加以下内容
    ```json
-      {"com.moodkie.easysave3": "https://github.com/AlianBlank/com.moodkie.easysave3.git"}
+      {"com.gameframex.unity.moodkie.easysave3": "https://github.com/GameFrameX/com.gameframex.unity.moodkie.easysave3.git"}
     ```
-2. 在Unity 的`Packages Manager` 中使用`Git URL` 的方式添加库,地址为：https://github.com/AlianBlank/com.moodkie.easysave3.git
+2. 在Unity 的`Packages Manager` 中使用`Git URL` 的方式添加库,地址为：https://github.com/GameFrameX/com.gameframex.unity.moodkie.easysave3.git
 
 3. 直接下载仓库放置到Unity 项目的`Packages` 目录下。会自动加载识别
 
@@ -18,7 +18,7 @@ Easy Save可以让你轻松地跨平台保存几乎任何东西，同时还具�
 
 1. 增加 `Packages` 的支持
 
-# 当前版本 `3.5.4`
+# 当前版本 `3.5.17`
 
 
 # 以下为原内容
