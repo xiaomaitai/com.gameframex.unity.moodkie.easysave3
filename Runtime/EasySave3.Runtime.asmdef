@@ -1,3 +1,28 @@
-﻿{
-  "name": "EasySave3.Runtime"
+{
+    "name": "EasySave3.Runtime",
+    "rootNamespace": "EasySave3.Runtime",
+    "references": [
+        "GameFrameX.Setting.Runtime",
+        "GameFrameX.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.gameframex.unity.setting",
+            "expression": "",
+            "define": "ENABLE_GAME_FRAME_X_SETTING"
+        },
+        {
+            "name": "com.gameframex.unity",
+            "expression": "",
+            "define": "ENABLE_GAME_FRAME_X"
+        }
+    ],
+    "noEngineReferences": false
 }
